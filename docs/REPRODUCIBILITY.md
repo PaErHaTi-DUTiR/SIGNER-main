@@ -13,8 +13,8 @@ through its text-only view.
 2. Train the matched XLM-R text-only model.
 3. Initialize SIGNER from that text-only checkpoint.
 4. Train SIGNER with paired speech and transcripts.
-5. Select hyperparameters on the development split.
-6. Evaluate the frozen selected configuration once on the test split.
+5. Select the checkpoint with the highest text-view development micro-F1.
+6. Evaluate that frozen checkpoint once on the test split.
 
 The two stages must use the same label schema, data splits, tokenizer family,
 and exact-span evaluator.
@@ -30,7 +30,7 @@ and exact-span evaluator.
 | Optimizer | AdamW |
 | Learning rate | `1e-5` |
 | Weight decay | `0.01` |
-| Batch size | `12` |
+| Batch size | `16` |
 | Epochs | 10 |
 | Consistency weight | `0.5` |
 | Audio dropout | `0.1` |

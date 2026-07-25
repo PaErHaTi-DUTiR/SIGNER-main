@@ -17,6 +17,10 @@
   <img src="assets/signer_overview.png" width="900" alt="Overview of the SIGNER framework">
 </p>
 
+<p align="center">
+  <sub>Final submitted architecture figure. <a href="assets/signer_overview.pdf">View as PDF</a>.</sub>
+</p>
+
 ## Overview
 
 SIGNER (**S**peech-**I**nformed **G**uided **N**amed **E**ntity
@@ -35,8 +39,8 @@ This repository provides:
 - dataset documentation and annotation guidelines;
 - reproducibility and release-integrity checks.
 
-> Experimental result tables are intentionally withheld from this initial
-> public snapshot and will be added with the final paper release.
+> Experimental result tables and performance-analysis figures are intentionally
+> excluded from this public snapshot.
 
 ## Why SIGNER?
 
@@ -101,15 +105,17 @@ directories can be substituted in the YAML files for offline execution.
 
 ## CA-STNER sample
 
-CA-STNER covers five Central Asian languages:
+CA-STNER covers five Central Asian languages. The following statistics are
+copied from the final submitted manuscript:
 
-| Code | Language | Script |
-|:---:|---|---|
-| `kk` | Kazakh | Cyrillic |
-| `ky` | Kyrgyz | Cyrillic |
-| `tg` | Tajik | Cyrillic |
-| `tk` | Turkmen | Latin |
-| `uz` | Uzbek | Latin |
+| Language | Train/dev/test | Hours | Utterances | Entity utterances | Zero-entity utterances | PER | LOC | ORG | Entities |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Kazakh (`kk`) | 1600/200/200 | 7.05 | 2,000 | 641 | 1,359 (68.0%) | 294 | 758 | 218 | 1,270 |
+| Kyrgyz (`ky`) | 1600/200/200 | 6.17 | 2,000 | 1,050 | 950 (47.5%) | 575 | 1,033 | 312 | 1,920 |
+| Tajik (`tg`) | 1581/198/197 | 7.16 | 1,976 | 779 | 1,197 (60.6%) | 364 | 959 | 228 | 1,551 |
+| Turkmen (`tk`) | 1600/200/200 | 6.48 | 2,000 | 946 | 1,054 (52.7%) | 245 | 1,109 | 399 | 1,753 |
+| Uzbek (`uz`) | 1600/200/200 | 4.32 | 2,000 | 1,425 | 575 (28.8%) | 878 | 1,022 | 386 | 2,286 |
+| **Total** | **7981/998/997** | **31.17** | **9,976** | **4,841** | **5,135 (51.5%)** | **2,356** | **4,881** | **1,543** | **8,780** |
 
 The released sample contains one human-verified record per language with
 character offsets and PER/LOC/ORG labels. Audio is not redistributed in this
@@ -161,13 +167,13 @@ Then train SIGNER using the text-only checkpoint as initialization:
 ```bash
 python scripts/train.py \
   --config configs/ca_stner_signer.yaml \
-  --init-checkpoint outputs/ca_stner/text_xlmr/signer_last.pt \
+  --init-checkpoint outputs/ca_stner/text_xlmr/signer_best.pt \
   --device cuda:0
 ```
 
 The main configuration uses XLM-R-base, a frozen Whisper-small encoder,
 text-anchored residual fusion, ten epochs, AdamW, a learning rate of
-`1e-5`, consistency weight `0.5`, and audio dropout `0.1`.
+`1e-5`, batch size `16`, consistency weight `0.5`, and audio dropout `0.1`.
 
 ## Evaluation
 
@@ -176,7 +182,7 @@ SIGNER is evaluated through the text-only view:
 ```bash
 python scripts/evaluate.py \
   --config configs/ca_stner_signer.yaml \
-  --checkpoint outputs/ca_stner/signer/signer_last.pt \
+  --checkpoint outputs/ca_stner/signer/signer_best.pt \
   --split test \
   --view text-only \
   --output-json outputs/ca_stner/signer/test_text_only.json \
@@ -189,19 +195,6 @@ reference annotation.
 
 For complete protocol details, see
 [Reproducibility](docs/REPRODUCIBILITY.md).
-
-## Reproducibility checklist
-
-- [x] Fixed train/dev/test split interface
-- [x] Seeded training
-- [x] Matched text-only baseline
-- [x] Public hyperparameter configurations
-- [x] Exact-span evaluation implementation
-- [x] Dataset schema and integrity checks
-- [x] Text-only deployment path
-- [ ] Full dataset download link — added with the archival release
-- [ ] Checkpoint download link — added with the final paper release
-- [ ] Paper result tables — added with the final paper release
 
 ## Citation
 

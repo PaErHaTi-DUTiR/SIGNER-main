@@ -24,6 +24,7 @@ from signer.data.dataset import CASpeechNERDataset  # noqa: E402
 from signer.models.model import SignerTokenClassifier  # noqa: E402
 from signer.training.losses import symmetric_kl_divergence  # noqa: E402
 from signer.utils.io import ensure_dir  # noqa: E402
+from signer.utils.ner import compute_span_prf, decode_bio_tags  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -127,6 +128,38 @@ def load_compatible_checkpoint(model: SignerTokenClassifier, checkpoint_path: st
     }
 
 
+def evaluate_text_view_micro_f1(
+    model: SignerTokenClassifier,
+    loader: DataLoader,
+    device: torch.device,
+) -> float:
+    """Evaluate exact-span micro-F1 through the deployable text-only view."""
+    was_training = model.training
+    model.eval()
+    predicted_spans = []
+    reference_spans = []
+    with torch.no_grad():
+        for batch in loader:
+            tensor_batch = {
+                key: value.to(device) if hasattr(value, "to") else value
+                for key, value in batch.items()
+            }
+            predictions = model.decode(tensor_batch)
+            for pred_ids, label_ids, mask in zip(
+                predictions,
+                batch["token_labels"],
+                batch["label_mask"],
+            ):
+                valid_pred_ids = torch.tensor(pred_ids, dtype=torch.long)[mask].tolist()
+                predicted_spans.append(set(decode_bio_tags(valid_pred_ids)))
+                reference_spans.append(
+                    set(decode_bio_tags(label_ids[mask].tolist()))
+                )
+    if was_training:
+        model.train()
+    return float(compute_span_prf(predicted_spans, reference_spans)["micro_f1"])
+
+
 def main() -> None:
     args = parse_args()
     config = load_config(args.config, project_root=PROJECT_ROOT)
@@ -165,6 +198,22 @@ def main() -> None:
         num_workers=config.training.num_workers,
         collate_fn=collator,
     )
+    dev_dataset = CASpeechNERDataset(
+        jsonl_path=Path(config.data.dataset_root) / config.data.dev_file,
+        dataset_root=config.data.dataset_root,
+        tokenizer_name_or_path=config.model.text_model_name_or_path,
+        max_text_length=config.data.max_text_length,
+        default_view="text-only",
+        sample_views=False,
+        speech_feature_cache_dir=config.data.speech_feature_cache_dir,
+    )
+    dev_loader = DataLoader(
+        dev_dataset,
+        batch_size=config.training.eval_batch_size,
+        shuffle=False,
+        num_workers=config.training.num_workers,
+        collate_fn=collator,
+    )
 
     model = SignerTokenClassifier(config.model).to(device)
     init_checkpoint = config.training.init_checkpoint
@@ -197,6 +246,9 @@ def main() -> None:
     log_window_steps = 0
     running_loss = 0.0
     final_loss = None
+    best_dev_micro_f1 = -1.0
+    best_epoch = None
+    best_checkpoint_path = output_dir / "signer_best.pt"
     accumulation_steps = max(int(config.training.gradient_accumulation_steps), 1)
     optimizer.zero_grad()
     for epoch in range(config.training.num_epochs):
@@ -246,14 +298,32 @@ def main() -> None:
 
             if config.training.max_steps and global_step >= config.training.max_steps:
                 break
+
+        dev_micro_f1 = evaluate_text_view_micro_f1(model, dev_loader, device)
+        print(f"epoch={epoch + 1} dev_text_micro_f1={dev_micro_f1:.6f}")
+        if dev_micro_f1 > best_dev_micro_f1:
+            best_dev_micro_f1 = dev_micro_f1
+            best_epoch = epoch + 1
+            torch.save(
+                {
+                    "model_state_dict": model.state_dict(),
+                    "epoch": best_epoch,
+                    "dev_text_micro_f1": best_dev_micro_f1,
+                },
+                best_checkpoint_path,
+            )
         if config.training.max_steps and global_step >= config.training.max_steps:
             break
 
-    checkpoint_path = output_dir / "signer_last.pt"
-    torch.save({"model_state_dict": model.state_dict()}, checkpoint_path)
+    last_checkpoint_path = output_dir / "signer_last.pt"
+    torch.save({"model_state_dict": model.state_dict()}, last_checkpoint_path)
 
     train_metrics = {
-        "checkpoint_path": str(checkpoint_path),
+        "checkpoint_path": str(best_checkpoint_path),
+        "best_checkpoint_path": str(best_checkpoint_path),
+        "last_checkpoint_path": str(last_checkpoint_path),
+        "best_epoch": best_epoch,
+        "best_dev_text_micro_f1": best_dev_micro_f1,
         "device": str(device),
         "num_steps": global_step,
         "optimizer_steps": optimizer_step,
@@ -278,7 +348,8 @@ def main() -> None:
     }
     (output_dir / "train_metrics.json").write_text(json.dumps(train_metrics, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(train_metrics, indent=2))
-    print(f"saved checkpoint to {checkpoint_path}")
+    print(f"saved best checkpoint to {best_checkpoint_path}")
+    print(f"saved last checkpoint to {last_checkpoint_path}")
 
 
 if __name__ == "__main__":

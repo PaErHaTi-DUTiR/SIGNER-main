@@ -5,6 +5,20 @@ CA-STNER is a speech-text named entity recognition benchmark for Kazakh
 annotation schema contains `PER`, `LOC`, and `ORG`, with exact character
 offsets and BIO tags over whitespace-tokenized transcripts.
 
+## Dataset statistics
+
+| Language | Train/dev/test | Hours | Utterances | Entity utterances | Zero-entity utterances | PER | LOC | ORG | Entities |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Kazakh (`kk`) | 1600/200/200 | 7.05 | 2,000 | 641 | 1,359 (68.0%) | 294 | 758 | 218 | 1,270 |
+| Kyrgyz (`ky`) | 1600/200/200 | 6.17 | 2,000 | 1,050 | 950 (47.5%) | 575 | 1,033 | 312 | 1,920 |
+| Tajik (`tg`) | 1581/198/197 | 7.16 | 1,976 | 779 | 1,197 (60.6%) | 364 | 959 | 228 | 1,551 |
+| Turkmen (`tk`) | 1600/200/200 | 6.48 | 2,000 | 946 | 1,054 (52.7%) | 245 | 1,109 | 399 | 1,753 |
+| Uzbek (`uz`) | 1600/200/200 | 4.32 | 2,000 | 1,425 | 575 (28.8%) | 878 | 1,022 | 386 | 2,286 |
+| **Total** | **7981/998/997** | **31.17** | **9,976** | **4,841** | **5,135 (51.5%)** | **2,356** | **4,881** | **1,543** | **8,780** |
+
+These values are copied from the final submitted manuscript. No experimental
+performance results are included in this repository snapshot.
+
 ## Initial public sample
 
 `data/ca_stner_sample/sample.jsonl` contains one human-verified annotation
@@ -90,4 +104,3 @@ archival dataset release and by the licenses of the underlying public speech
 sources. Users are responsible for complying with those terms. This GitHub
 repository does not redistribute third-party model weights or the complete
 speech corpus.
-
