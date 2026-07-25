@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments and editors
+.venv/
+venv/
+.env
+.env.*
+.idea/
+.vscode/
+
+# Training artifacts
+outputs/
+checkpoints/
+logs/
+wandb/
+runs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Model and dataset payloads
+base_model/
+data/ca_stner/
+data/ca_stner_signer/
+*.wav
+*.mp3
+*.flac
+*.npy
+*.npz
+
+# Secrets
+*api_key*
+*API_KEY*
+*.pem
+*.key
+credentials*
+secrets*
+
+# OS files
+.DS_Store
+Thumbs.db
+

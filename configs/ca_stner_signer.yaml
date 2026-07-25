@@ -1,0 +1,46 @@
+data:
+  dataset_root: data/ca_stner
+  train_file: ../ca_stner_signer/train.jsonl
+  dev_file: ../ca_stner_signer/dev.jsonl
+  test_file: ../ca_stner_signer/test.jsonl
+  sample_rate: 16000
+  max_audio_seconds: 30.0
+  max_text_length: 256
+  train_default_view: speech-text
+  view_for_eval: speech-text
+  sample_training_views: false
+  train_view_probs:
+    speech-text: 1.0
+
+model:
+  whisper_name_or_path: openai/whisper-small
+  speech_encoder_type: whisper
+  text_model_name_or_path: xlm-roberta-base
+  hidden_size: 768
+  dropout: 0.1
+  use_speech_branch: true
+  freeze_speech_encoder: true
+  freeze_text_encoder: false
+  fusion_type: text_anchored_residual   # fusion ablation
+
+training:
+  batch_size: 12
+  eval_batch_size: 12
+  learning_rate: 1.0e-5
+  weight_decay: 0.01
+  num_epochs: 10
+  max_steps: null
+  gradient_clip_norm: 1.0
+  gradient_accumulation_steps: 1
+  consistency_weight: 0.5
+  aux_text_loss_weight: 0.3
+  audio_dropout: 0.1
+  text_dropout: 0.0
+  device: cuda
+  output_dir: outputs/ca_stner/signer
+  init_checkpoint: null
+  log_every_steps: 50
+  num_workers: 4
+  seed: 42
+  positive_example_oversampling: 2.0
+  non_o_loss_weight: 3.0

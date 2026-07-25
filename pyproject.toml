@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signer-ner"
+version = "0.1.0"
+description = "Privileged acoustic-text fusion for low-resource multilingual named entity recognition"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+  {name = "SIGNER Authors"}
+]
+dependencies = [
+  "numpy<2",
+  "PyYAML==6.0.3",
+  "torch==2.1.2",
+  "torchaudio==2.1.2",
+  "transformers==4.39.3",
+  "datasets==2.18.0",
+  "sentencepiece==0.1.99",
+  "accelerate==0.29.3",
+  "pydub==0.25.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/PaErHaTi-DUTiR/SIGNER-main"
+Repository = "https://github.com/PaErHaTi-DUTiR/SIGNER-main"
+Issues = "https://github.com/PaErHaTi-DUTiR/SIGNER-main/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

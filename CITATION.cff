@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use SIGNER or CA-STNER, please cite the accompanying paper."
+title: "SIGNER: Privileged Acoustic-Text Fusion for Low-Resource Multilingual Named Entity Recognition"
+type: software
+authors:
+  - family-names: Tulajiang
+    given-names: Paerhati
+    orcid: "https://orcid.org/0009-0000-0432-692X"
+  - family-names: Sun
+    given-names: Yuanyuan
+    orcid: "https://orcid.org/0000-0002-6515-134X"
+  - family-names: Xiao
+    given-names: Kelaiti
+    orcid: "https://orcid.org/0009-0007-6223-3642"
+  - family-names: Zhang
+    given-names: Yuanyu
+    orcid: "https://orcid.org/0000-0002-6740-1701"
+  - family-names: Luo
+    given-names: Ling
+    orcid: "https://orcid.org/0000-0002-5141-0259"
+  - family-names: Lin
+    given-names: Hongfei
+    orcid: "https://orcid.org/0000-0003-0872-7688"
+repository-code: "https://github.com/PaErHaTi-DUTiR/SIGNER-main"
+license: MIT
+version: 0.1.0
+date-released: 2026-07-25
+
