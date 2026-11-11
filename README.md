@@ -45,19 +45,6 @@ The following numbers are transcribed from the author-provided revised manuscrip
 
 The indented variant inherits XLM-R-large. Its speech encoder is adapted for ASR before NER training and then frozen; inference remains text-only. Bold identifies the default SIGNER configurations, not column-wise significance.
 
-### Public benchmarks
-
-| Model | MSNER Micro-F1 | MSNER language macro-F1 | AISHELL-NER Micro-F1 |
-|:--|--:|--:|--:|
-| XLM-R-base | 89.15 ± 0.53 | 89.58 ± 0.68 | 85.74 ± 0.13 |
-| XLM-R-large | 90.95 ± 0.29 | 91.44 ± 0.36 | 87.33 ± 0.34 |
-| GLiNER | 90.30 ± 0.29 | 90.64 ± 0.53 | 90.76 ± 0.26 |
-| Biaffine NER | 55.55 ± 0.47 | 58.25 ± 0.50 | 90.96 ± 0.30 |
-| **SIGNER-base** | **89.75 ± 0.24** | **90.25 ± 0.35** | **91.42 ± 0.11** |
-| **SIGNER-large** | **91.72 ± 0.15** | **91.94 ± 0.04** | **91.79 ± 0.26** |
-
-MSNER retains its original four-class schema, including MISC. CA-STNER and AISHELL-NER use PER, LOC, and ORG. These manuscript results are not newly measured on the public example file.
-
 <details>
 <summary><b>Label efficiency</b></summary>
 
@@ -95,14 +82,20 @@ Outputs are predicted character spans and a JSON report with overall, per-langua
 
 **Central Asian Speech–Text Named Entity Recognition** covers Kazakh, Kyrgyz, Tajik, Turkmen, and Uzbek.
 
-| Language | Code | Train / Dev / Test |
-|:--|:--:|--:|
-| Kazakh | kk | 1,600 / 200 / 200 |
-| Kyrgyz | ky | 1,600 / 200 / 200 |
-| Tajik | tg | 1,581 / 198 / 197 |
-| Turkmen | tk | 1,600 / 200 / 200 |
-| Uzbek | uz | 1,600 / 200 / 200 |
-| **Manuscript total** | | **7,981 / 998 / 997** |
+### Dataset statistics
+
+Language-level statistics from the revised manuscript. Splits are reported as **train / dev / test**; entity counts are mention counts across all three splits.
+
+| Language | Train / Dev / Test | Hours | Utterances | With entities | Without entities (%) | PER | LOC | ORG | Entities |
+|:--|:--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Kazakh (kk) | 1,600 / 200 / 200 | 7.05 | 2,000 | 641 | 1,359 (68.0) | 294 | 758 | 218 | 1,270 |
+| Kyrgyz (ky) | 1,600 / 200 / 200 | 6.17 | 2,000 | 1,050 | 950 (47.5) | 575 | 1,033 | 312 | 1,920 |
+| Tajik (tg) | 1,581 / 198 / 197 | 7.16 | 1,976 | 779 | 1,197 (60.6) | 364 | 959 | 228 | 1,551 |
+| Turkmen (tk) | 1,600 / 200 / 200 | 6.48 | 2,000 | 946 | 1,054 (52.7) | 245 | 1,109 | 399 | 1,753 |
+| Uzbek (uz) | 1,600 / 200 / 200 | 4.32 | 2,000 | 1,425 | 575 (28.8) | 878 | 1,022 | 386 | 2,286 |
+| **Total** | **7,981 / 998 / 997** | **31.17** | **9,976** | **4,841** | **5,135 (51.5)** | **2,356** | **4,881** | **1,543** | **8,780** |
+
+**With entities** counts utterances containing at least one named entity; **Without entities (%)** gives the count and percentage of zero-entity utterances. Hours are rounded independently, so displayed language subtotals may differ slightly from the corpus total. These statistics describe the complete benchmark, not just the public example file.
 
 This release provides the author-designated [test examples](data/ca_stner_test/test.jsonl), plus a small [five-language format sample](data/ca_stner_sample/sample.jsonl). **The test-example file contains 998 records whose preserved source field is `split: dev`; it is not the manuscript's 997-record held-out TEST partition.** Its filename is retained as supplied. Do not use it to claim reproduction of the paper's TEST scores. Training data, private audio, reviewer materials, and manuscript TeX are not included.
 
