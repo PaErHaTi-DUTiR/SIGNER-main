@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/Code-MIT-059669)](LICENSE)
 [![Checks](https://github.com/PaErHaTi-DUTiR/SIGNER-main/actions/workflows/release-checks.yml/badge.svg)](https://github.com/PaErHaTi-DUTiR/SIGNER-main/actions/workflows/release-checks.yml)
 
-[Overview](#overview) · [Results](#results) · [Quick start](#quick-start) · [CA-STNER](#ca-stner) · [Training](docs/TRAINING.md) · [Citation](#citation)
+[Overview](#overview) · [Results](#results) · [Dataset](#ca-stner) · [Quick start](#quick-start) · [Training](docs/TRAINING.md) · [Citation](#citation)
 
 </div>
 
@@ -30,20 +30,22 @@ The base configuration combines XLM-R-base with frozen Whisper-small. The large 
 
 ## Results
 
-The following numbers are transcribed from the author-provided revised manuscript. They are **test F1 (%)**, reported as **mean ± sample standard deviation** across three runs. The single released base checkpoint is not a three-model ensemble and does not by itself reproduce a three-seed mean.
+**Test F1 (%) · Mean ± sample SD · Three runs**
 
-### CA-STNER
+Results follow the revised manuscript. The released checkpoint is a single base model, not a three-seed ensemble.
 
-| Model | kk | ky | tg | tk | uz | Micro-F1 | Language macro-F1 |
+### CA-STNER · Main comparison
+
+| Model | kk | ky | tg | tk | uz | Micro | Macro |
 |:--|--:|--:|--:|--:|--:|--:|--:|
-| XLM-R-base | 65.07 ± 4.00 | 68.72 ± 1.07 | 56.43 ± 1.59 | 42.06 ± 2.16 | 76.50 ± 0.94 | 63.55 ± 1.20 | 61.76 ± 1.37 |
-| XLM-R-large | 67.01 ± 0.15 | 71.26 ± 0.14 | 60.42 ± 2.54 | 39.90 ± 1.10 | 78.07 ± 0.91 | 65.21 ± 0.38 | 63.33 ± 0.58 |
-| Acoustic-privileged KD | 73.87 ± 1.50 | 76.68 ± 3.74 | 61.03 ± 1.19 | 66.46 ± 1.43 | 81.71 ± 1.36 | 73.25 ± 1.16 | 71.95 ± 1.04 |
-| **SIGNER-base** | **77.94 ± 1.58** | **80.53 ± 0.65** | **64.70 ± 3.66** | **66.13 ± 1.49** | **78.87 ± 0.89** | **74.15 ± 0.80** | **73.63 ± 0.86** |
-| **SIGNER-large** | **81.74 ± 3.22** | **82.55 ± 1.04** | **65.89 ± 0.73** | **66.26 ± 2.97** | **81.77 ± 1.51** | **76.09 ± 0.48** | **75.64 ± 0.76** |
-| ↳ ASR-adapted Whisper-small | 82.40 ± 2.84 | 83.22 ± 0.86 | 64.38 ± 1.64 | 67.37 ± 1.14 | 82.04 ± 0.53 | 76.35 ± 0.19 | 75.88 ± 0.72 |
+| <sub>XLM&#8209;R&#8209;base</sub> | <sub>65.07&#8288;±&#8288;4.00</sub> | <sub>68.72&#8288;±&#8288;1.07</sub> | <sub>56.43&#8288;±&#8288;1.59</sub> | <sub>42.06&#8288;±&#8288;2.16</sub> | <sub>76.50&#8288;±&#8288;0.94</sub> | <sub>63.55&#8288;±&#8288;1.20</sub> | <sub>61.76&#8288;±&#8288;1.37</sub> |
+| <sub>XLM&#8209;R&#8209;large</sub> | <sub>67.01&#8288;±&#8288;0.15</sub> | <sub>71.26&#8288;±&#8288;0.14</sub> | <sub>60.42&#8288;±&#8288;2.54</sub> | <sub>39.90&#8288;±&#8288;1.10</sub> | <sub>78.07&#8288;±&#8288;0.91</sub> | <sub>65.21&#8288;±&#8288;0.38</sub> | <sub>63.33&#8288;±&#8288;0.58</sub> |
+| <sub>Acoustic&nbsp;KD</sub> | <sub>73.87&#8288;±&#8288;1.50</sub> | <sub>76.68&#8288;±&#8288;3.74</sub> | <sub>61.03&#8288;±&#8288;1.19</sub> | <sub>66.46&#8288;±&#8288;1.43</sub> | <sub>81.71&#8288;±&#8288;1.36</sub> | <sub>73.25&#8288;±&#8288;1.16</sub> | <sub>71.95&#8288;±&#8288;1.04</sub> |
+| <sub><b>SIGNER&#8209;base</b></sub> | <sub>77.94&#8288;±&#8288;1.58</sub> | <sub>80.53&#8288;±&#8288;0.65</sub> | <sub>64.70&#8288;±&#8288;3.66</sub> | <sub>66.13&#8288;±&#8288;1.49</sub> | <sub>78.87&#8288;±&#8288;0.89</sub> | <sub><b>74.15&#8288;±&#8288;0.80</b></sub> | <sub><b>73.63&#8288;±&#8288;0.86</b></sub> |
+| <sub><b>SIGNER&#8209;large</b></sub> | <sub>81.74&#8288;±&#8288;3.22</sub> | <sub>82.55&#8288;±&#8288;1.04</sub> | <sub>65.89&#8288;±&#8288;0.73</sub> | <sub>66.26&#8288;±&#8288;2.97</sub> | <sub>81.77&#8288;±&#8288;1.51</sub> | <sub><b>76.09&#8288;±&#8288;0.48</b></sub> | <sub><b>75.64&#8288;±&#8288;0.76</b></sub> |
+| <sub>↳&nbsp;ASR&#8209;adapted</sub> | <sub>82.40&#8288;±&#8288;2.84</sub> | <sub>83.22&#8288;±&#8288;0.86</sub> | <sub>64.38&#8288;±&#8288;1.64</sub> | <sub>67.37&#8288;±&#8288;1.14</sub> | <sub>82.04&#8288;±&#8288;0.53</sub> | <sub>76.35&#8288;±&#8288;0.19</sub> | <sub>75.88&#8288;±&#8288;0.72</sub> |
 
-The indented variant inherits XLM-R-large. Its speech encoder is adapted for ASR before NER training and then frozen; inference remains text-only. Bold identifies the default SIGNER configurations, not column-wise significance.
+**Micro / Macro:** micro-F1 / language macro-F1. **Acoustic KD:** acoustic-privileged KD. The indented variant uses SIGNER-large with ASR-adapted Whisper-small, frozen during NER training. Bold marks the default SIGNER configurations, not statistical significance.
 
 <details>
 <summary><b>Label efficiency</b></summary>
@@ -86,16 +88,18 @@ Outputs are predicted character spans and a JSON report with overall, per-langua
 
 Language-level statistics from the revised manuscript. Splits are reported as **train / dev / test**; entity counts are mention counts across all three splits.
 
-| Language | Train / Dev / Test | Hours | Utterances | With entities | Without entities (%) | PER | LOC | ORG | Entities |
+| Language | Split | Hours | Utt. | Ent.&nbsp;utt. | Zero&nbsp;(%) | PER | LOC | ORG | Entities |
 |:--|:--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Kazakh (kk) | 1,600 / 200 / 200 | 7.05 | 2,000 | 641 | 1,359 (68.0) | 294 | 758 | 218 | 1,270 |
-| Kyrgyz (ky) | 1,600 / 200 / 200 | 6.17 | 2,000 | 1,050 | 950 (47.5) | 575 | 1,033 | 312 | 1,920 |
-| Tajik (tg) | 1,581 / 198 / 197 | 7.16 | 1,976 | 779 | 1,197 (60.6) | 364 | 959 | 228 | 1,551 |
-| Turkmen (tk) | 1,600 / 200 / 200 | 6.48 | 2,000 | 946 | 1,054 (52.7) | 245 | 1,109 | 399 | 1,753 |
-| Uzbek (uz) | 1,600 / 200 / 200 | 4.32 | 2,000 | 1,425 | 575 (28.8) | 878 | 1,022 | 386 | 2,286 |
-| **Total** | **7,981 / 998 / 997** | **31.17** | **9,976** | **4,841** | **5,135 (51.5)** | **2,356** | **4,881** | **1,543** | **8,780** |
+| <sub>Kazakh&nbsp;(kk)</sub> | <sub>1,600&#8288;/&#8288;200&#8288;/&#8288;200</sub> | <sub>7.05</sub> | <sub>2,000</sub> | <sub>641</sub> | <sub>1,359&nbsp;(68.0)</sub> | <sub>294</sub> | <sub>758</sub> | <sub>218</sub> | <sub>1,270</sub> |
+| <sub>Kyrgyz&nbsp;(ky)</sub> | <sub>1,600&#8288;/&#8288;200&#8288;/&#8288;200</sub> | <sub>6.17</sub> | <sub>2,000</sub> | <sub>1,050</sub> | <sub>950&nbsp;(47.5)</sub> | <sub>575</sub> | <sub>1,033</sub> | <sub>312</sub> | <sub>1,920</sub> |
+| <sub>Tajik&nbsp;(tg)</sub> | <sub>1,581&#8288;/&#8288;198&#8288;/&#8288;197</sub> | <sub>7.16</sub> | <sub>1,976</sub> | <sub>779</sub> | <sub>1,197&nbsp;(60.6)</sub> | <sub>364</sub> | <sub>959</sub> | <sub>228</sub> | <sub>1,551</sub> |
+| <sub>Turkmen&nbsp;(tk)</sub> | <sub>1,600&#8288;/&#8288;200&#8288;/&#8288;200</sub> | <sub>6.48</sub> | <sub>2,000</sub> | <sub>946</sub> | <sub>1,054&nbsp;(52.7)</sub> | <sub>245</sub> | <sub>1,109</sub> | <sub>399</sub> | <sub>1,753</sub> |
+| <sub>Uzbek&nbsp;(uz)</sub> | <sub>1,600&#8288;/&#8288;200&#8288;/&#8288;200</sub> | <sub>4.32</sub> | <sub>2,000</sub> | <sub>1,425</sub> | <sub>575&nbsp;(28.8)</sub> | <sub>878</sub> | <sub>1,022</sub> | <sub>386</sub> | <sub>2,286</sub> |
+| <sub><b>Total</b></sub> | <sub><b>7,981&#8288;/&#8288;998&#8288;/&#8288;997</b></sub> | <sub><b>31.17</b></sub> | <sub><b>9,976</b></sub> | <sub><b>4,841</b></sub> | <sub><b>5,135&nbsp;(51.5)</b></sub> | <sub><b>2,356</b></sub> | <sub><b>4,881</b></sub> | <sub><b>1,543</b></sub> | <sub><b>8,780</b></sub> |
 
-**With entities** counts utterances containing at least one named entity; **Without entities (%)** gives the count and percentage of zero-entity utterances. Hours are rounded independently, so displayed language subtotals may differ slightly from the corpus total. These statistics describe the complete benchmark, not just the public example file.
+**Split:** train/dev/test. **Utt.:** utterances. **Ent. utt.:** utterances with entities. **Zero (%):** zero-entity utterances, count (percentage). **Entities:** total entity mentions.
+
+Hours are rounded independently; displayed subtotals may differ slightly from the corpus total. Statistics describe the complete benchmark, not just the public examples.
 
 This release provides the author-designated [test examples](data/ca_stner_test/test.jsonl), plus a small [five-language format sample](data/ca_stner_sample/sample.jsonl). **The test-example file contains 998 records whose preserved source field is `split: dev`; it is not the manuscript's 997-record held-out TEST partition.** Its filename is retained as supplied. Do not use it to claim reproduction of the paper's TEST scores. Training data, private audio, reviewer materials, and manuscript TeX are not included.
 
