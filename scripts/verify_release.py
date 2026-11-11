@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import argparse
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -86,8 +88,47 @@ def verify_no_secrets() -> list[str]:
     return errors
 
 
+def verify_public_data() -> list[str]:
+    path = ROOT / 'data/ca_stner_test/test.jsonl'
+    rows = [json.loads(s) for s in path.read_text(encoding='utf-8').splitlines() if s.strip()]
+    errors = []
+    if len(rows) != 998 or len({r['id'] for r in rows}) != 998:
+        errors.append('Public example identity/count mismatch')
+    if hashlib.sha256(path.read_bytes()).hexdigest() != '91b2b7f42371872fc129452b2feccd6ed359ce9037a0766fe264f888c61e6534':
+        errors.append('Author-provided example file has changed')
+    if {r['split'] for r in rows} != {'dev'}:
+        errors.append('Source split provenance changed')
+    for row in rows:
+        text = row['text']['normalized_transcript']
+        if row['language'] not in LANGUAGES:
+            errors.append('Unsupported language')
+        for e in row['entities']:
+            a, b = e['start'], e['end']
+            if e['label'] not in LABELS or not 0 <= a < b <= len(text) or text[a:b] != e['text']:
+                errors.append('Invalid entity boundary/type/surface')
+        if {'annotator_id', 'adjudication_status'} & set(row.get('metadata', {})):
+            errors.append('Private annotation metadata in public file')
+    return errors
+
+
+def verify_checkpoint(path) -> list[str]:
+    manifest = json.loads((ROOT / 'model_checkpoint/manifest.json').read_text())
+    if not path.is_file() or path.stat().st_size != manifest['bytes']:
+        return ['Checkpoint missing or wrong size']
+    digest = hashlib.sha256()
+    with path.open('rb') as handle:
+        for block in iter(lambda: handle.read(2**20), b''):
+            digest.update(block)
+    return [] if digest.hexdigest() == manifest['sha256'] else ['Checkpoint checksum mismatch']
+
+
 def main() -> None:
-    errors = verify_sample() + verify_no_secrets()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--checkpoint', type=Path)
+    args = parser.parse_args()
+    errors = verify_sample() + verify_public_data() + verify_no_secrets()
+    if args.checkpoint:
+        errors += verify_checkpoint(args.checkpoint)
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

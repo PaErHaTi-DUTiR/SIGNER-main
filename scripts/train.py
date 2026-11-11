@@ -104,9 +104,12 @@ def apply_modality_dropout(batch: dict, *, audio_dropout: float, text_dropout: f
 
 
 def load_compatible_checkpoint(model: SignerTokenClassifier, checkpoint_path: str | Path) -> dict:
-    init_state = torch.load(checkpoint_path, map_location='cpu')
+    init_state = torch.load(str(checkpoint_path), map_location='cpu', weights_only=True)
     source_state = init_state['model_state_dict']
     target_state = model.state_dict()
+    expected = {k for k in target_state if k.startswith(('text_branch.', 'classifier.', 'modality_embedding.'))}
+    if set(source_state) != expected or any(source_state[k].shape != target_state[k].shape for k in expected):
+        raise ValueError('Warm-start must restore every text/classifier/view tensor, and no speech/fusion tensor')
     compatible_state = {}
     skipped_shape = []
     for key, value in source_state.items():
@@ -145,16 +148,18 @@ def evaluate_text_view_micro_f1(
                 for key, value in batch.items()
             }
             predictions = model.decode(tensor_batch)
-            for pred_ids, label_ids, mask in zip(
+            for pred_ids, entities, offsets, mask in zip(
                 predictions,
-                batch["token_labels"],
+                batch["entity_spans"],
+                batch["offset_mappings"],
                 batch["label_mask"],
             ):
                 valid_pred_ids = torch.tensor(pred_ids, dtype=torch.long)[mask].tolist()
-                predicted_spans.append(set(decode_bio_tags(valid_pred_ids)))
-                reference_spans.append(
-                    set(decode_bio_tags(label_ids[mask].tolist()))
-                )
+                valid_offsets = [o for o, valid in zip(offsets, mask.tolist()) if valid]
+                predicted_spans.append({(min(a for a, b in valid_offsets[first:last]),
+                                         max(b for a, b in valid_offsets[first:last]), label)
+                                        for first, last, label in decode_bio_tags(valid_pred_ids)})
+                reference_spans.append({(e["start"], e["end"], e["label"]) for e in entities})
     if was_training:
         model.train()
     return float(compute_span_prf(predicted_spans, reference_spans)["micro_f1"])
@@ -252,6 +257,7 @@ def main() -> None:
     accumulation_steps = max(int(config.training.gradient_accumulation_steps), 1)
     optimizer.zero_grad()
     for epoch in range(config.training.num_epochs):
+        model.train()
         for batch in loader:
             global_step += 1
             batch = {key: value.to(device) if hasattr(value, "to") else value for key, value in batch.items()}
@@ -309,6 +315,9 @@ def main() -> None:
                     "model_state_dict": model.state_dict(),
                     "epoch": best_epoch,
                     "dev_text_micro_f1": best_dev_micro_f1,
+                    "selection_split": "dev",
+                    "selection_view": "text-only",
+                    "selection_metric": "exact_original_character_span_and_type_micro_f1",
                 },
                 best_checkpoint_path,
             )

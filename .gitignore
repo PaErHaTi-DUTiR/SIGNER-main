@@ -36,6 +36,10 @@ data/ca_stner_signer/
 *.npz
 
 # Secrets
+assets/Manuscript_Final.tex
+*.tex
+*.aux
+*.log
 *api_key*
 *API_KEY*
 *.pem

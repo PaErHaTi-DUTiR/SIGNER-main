@@ -46,7 +46,8 @@ def encode_entities_with_bio(
                 labels[index] = TAG_TO_ID[f"I-{entity.label}"]
                 break
     encoded["token_labels"] = labels
-    return encoded
+    from signer.bio import repair_duplicate_b_starts
+    return repair_duplicate_b_starts(encoded, entities, TAG_TO_ID, IGNORE_INDEX)
 
 
 class CASpeechNERDataset(Dataset):

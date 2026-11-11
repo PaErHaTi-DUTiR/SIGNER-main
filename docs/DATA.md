@@ -1,106 +1,38 @@
-# CA-STNER data
+# CA-STNER: data format and public scope
 
-CA-STNER is a speech-text named entity recognition benchmark for Kazakh
-(`kk`), Kyrgyz (`ky`), Tajik (`tg`), Turkmen (`tk`), and Uzbek (`uz`). Its
-annotation schema contains `PER`, `LOC`, and `ORG`, with exact character
-offsets and BIO tags over whitespace-tokenized transcripts.
+## Included files
 
-## Dataset statistics
+| File | Records | Purpose |
+|:--|--:|:--|
+| `data/ca_stner_test/test.jsonl` | 998 | Author-designated test examples; original source split is DEV |
+| `data/ca_stner_sample/sample.jsonl` | 5 | Compact token/BIO format examples, one per language |
 
-| Language | Train/dev/test | Hours | Utterances | Entity utterances | Zero-entity utterances | PER | LOC | ORG | Entities |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Kazakh (`kk`) | 1600/200/200 | 7.05 | 2,000 | 641 | 1,359 (68.0%) | 294 | 758 | 218 | 1,270 |
-| Kyrgyz (`ky`) | 1600/200/200 | 6.17 | 2,000 | 1,050 | 950 (47.5%) | 575 | 1,033 | 312 | 1,920 |
-| Tajik (`tg`) | 1581/198/197 | 7.16 | 1,976 | 779 | 1,197 (60.6%) | 364 | 959 | 228 | 1,551 |
-| Turkmen (`tk`) | 1600/200/200 | 6.48 | 2,000 | 946 | 1,054 (52.7%) | 245 | 1,109 | 399 | 1,753 |
-| Uzbek (`uz`) | 1600/200/200 | 4.32 | 2,000 | 1,425 | 575 (28.8%) | 878 | 1,022 | 386 | 2,286 |
-| **Total** | **7981/998/997** | **31.17** | **9,976** | **4,841** | **5,135 (51.5%)** | **2,356** | **4,881** | **1,543** | **8,780** |
+The supplied test-example file is preserved byte for byte. All 998 records have `split: dev` (kk 200, ky 200, tg 198, tk 200, uz 200). It is not the manuscript's 997-example held-out TEST partition. Its original filename is preserved for the public example workflow. Do not relabel, merge, or use these DEV examples to report the manuscript's held-out TEST numbers.
 
-These values are copied from the final submitted manuscript. No experimental
-performance results are included in this repository snapshot.
+No full TRAIN split, private audio, API output cache, annotation-review history, manuscript source, or internal experimental output is redistributed here. Audio paths in records are source references, not bundled files or promised download locations. They are not read during text-only inference.
 
-## Initial public sample
-
-`data/ca_stner_sample/sample.jsonl` contains one human-verified annotation
-example per language. It is intended for:
-
-- inspecting the schema;
-- testing loaders and offset validation;
-- understanding multilingual surface forms;
-- preparing downstream adapters.
-
-Audio is not redistributed in this lightweight repository snapshot. Each
-record retains the expected relative path in the complete dataset. The sample
-must not be used to report benchmark performance.
-
-## Public annotation format
-
-Each JSONL record has the following structure:
+## Transcript-space schema
 
 ```json
 {
-  "id": "example_id",
-  "split": "test",
-  "language": "kk",
-  "audio": {
-    "path": "kk/audio/example.wav",
-    "sample_rate": 16000,
-    "duration_sec": 5.0
-  },
-  "text": "transcript",
-  "tokens": ["transcript"],
-  "ner_tags": ["O"],
-  "entities": [
-    {"text": "entity", "label": "LOC", "start": 0, "end": 6}
-  ]
+  "id": "example-001",
+  "language": "uz",
+  "split": "dev",
+  "text": {"transcript": "Toshkent", "normalized_transcript": "Toshkent"},
+  "entities": [{"start": 0, "end": 8, "text": "Toshkent", "label": "LOC"}]
 }
 ```
 
-Offsets follow Python's half-open convention `[start, end)`. For every entity,
-`text[start:end]` must exactly equal `entity.text`.
+This abbreviated synthetic example illustrates the fields used by the text evaluator, not a released corpus record. Source records additionally contain audio and metadata fields.
 
-## Complete release layout
+Offsets are zero-based, end-exclusive Unicode character indices into `text.normalized_transcript`, not UTF-8 byte indices. Entity surfaces must satisfy `text[start:end] == entity.text`. The labels are PER, LOC, and ORG. Empty entity lists are valid and must not be filtered. Preserve original text, identifiers, boundaries, and language codes.
 
-```text
-data/ca_stner/
-├── kk/
-│   ├── train.jsonl
-│   ├── dev.jsonl
-│   ├── test.jsonl
-│   └── audio/
-├── ky/
-├── tg/
-├── tk/
-└── uz/
-```
+Evaluation requires exact boundaries and type on each sample. A partial overlap does not count as a true positive. Language macro-F1 is the unweighted average of language-specific entity micro-F1, not the average of entity-type scores. Public examples and benchmark scores have different scopes.
 
-Use `scripts/prepare_ca_stner.py` to convert this public representation into
-the canonical model input format.
+## Manuscript corpus
 
-## Dataset integrity
+The manuscript reports 9,976 utterances, 31.17 hours, and 8,780 entity mentions, split 7,981/998/997. The five languages are Kazakh, Kyrgyz, Tajik, Turkmen, and Uzbek. These corpus statistics describe the full benchmark, not just the files included here.
 
-The preparation script checks:
+## Rights and privacy
 
-1. valid JSON records;
-2. unique sample identifiers;
-3. disjoint train/dev/test identifiers;
-4. equal token and BIO-tag sequence lengths;
-5. valid BIO transitions;
-6. exact entity-character offsets;
-7. supported languages and labels.
-
-## Annotation
-
-The final labels are human-verified. Audio may be consulted to resolve
-ambiguity, while entity spans are always defined over the provided transcript.
-See [ANNOTATION_GUIDELINES.md](ANNOTATION_GUIDELINES.md) for the complete
-protocol.
-
-## Licensing and provenance
-
-The SIGNER code license does not automatically apply to dataset content.
-CA-STNER annotations and audio are governed by the terms accompanying the
-archival dataset release and by the licenses of the underlying public speech
-sources. Users are responsible for complying with those terms. This GitHub
-repository does not redistribute third-party model weights or the complete
-speech corpus.
+The revised manuscript identifies Mozilla Common Voice v25 as the speech source for all five languages. Underlying source data-use terms and consent requirements continue to apply. This repository's MIT license covers original software; it is not a blanket license for speech, personal information, or third-party datasets. No audio is redistributed in this release. A separate dataset-specific reuse license has not been included; contact the authors before redistribution beyond the supplied research examples.

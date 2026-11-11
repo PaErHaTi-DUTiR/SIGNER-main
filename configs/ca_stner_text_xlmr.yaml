@@ -27,7 +27,7 @@ model:
 training:
   batch_size: 16
   eval_batch_size: 16
-  learning_rate: 2.0e-5
+  learning_rate: 1.0e-5
   weight_decay: 0.01
   num_epochs: 10
   max_steps: null

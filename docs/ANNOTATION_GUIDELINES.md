@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-CA-STNER is a Named Entity Recognition dataset built from speech recordings in five Central Asian languages. Each record consists of an audio clip and its transcript (produced via ASR). Annotators are asked to identify and label **person names (PER)**, **organizations (ORG)**, and **locations (LOC)** in the transcript text, while listening to the corresponding audio when needed for disambiguation.
+CA-STNER is a Named Entity Recognition dataset built from speech recordings in five Central Asian languages. Each source instance pairs audio with an existing crowd-verified source transcript, not a new ASR transcription. Annotators identify **person names (PER)**, **organizations (ORG)**, and **locations (LOC)** in the transcript, consulting audio when needed for disambiguation.
 
 **Annotation mode:** Reviewers are presented with LLM pre-annotations (shown as colored highlights). Your task is to:
 1. **Confirm** correct pre-annotations (leave unchanged)

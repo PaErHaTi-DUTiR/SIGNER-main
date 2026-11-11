@@ -7,7 +7,7 @@ data:
   max_audio_seconds: 30.0
   max_text_length: 256
   train_default_view: speech-text
-  view_for_eval: speech-text
+  view_for_eval: text-only
   sample_training_views: false
   train_view_probs:
     speech-text: 1.0

@@ -117,8 +117,6 @@ class BaseSample:
             "quality_flag",
             "text_audio_consistency",
             "annotation_status",
-            "annotator_id",
-            "adjudication_status",
         }
         missing = sorted(required_fields - set(self.metadata.keys()))
         if missing:
@@ -132,11 +130,11 @@ class BaseSample:
         if annotation_status not in ANNOTATION_STATUS_VALUES:
             raise ValueError(f"Unsupported annotation_status: {annotation_status}")
 
-        adjudication_status = str(self.metadata["adjudication_status"])
-        if adjudication_status not in ADJUDICATION_STATUS_VALUES:
+        adjudication_status = self.metadata.get("adjudication_status")
+        if adjudication_status is not None and adjudication_status not in ADJUDICATION_STATUS_VALUES:
             raise ValueError(f"Unsupported adjudication_status: {adjudication_status}")
 
-        if self.metadata["annotator_id"] is None:
+        if "annotator_id" in self.metadata and not isinstance(self.metadata["annotator_id"], str):
             raise ValueError("annotator_id must be a string")
 
     def to_dict(self) -> dict[str, Any]:

@@ -1,0 +1,16 @@
+{
+  "filename": "SIGNER.pt",
+  "bytes": 1482098106,
+  "sha256": "99d6bfcf2fe0a6390058ac374761717d4622caca7c55757868aa849861653944",
+  "variant": "CA-STNER SIGNER-base",
+  "seed": 42,
+  "text_encoder": "xlm-roberta-base",
+  "training_speech_encoder": "openai/whisper-small (frozen)",
+  "inference_view": "text-only",
+  "classifier_slots": 9,
+  "gold_entity_types": ["PER", "LOC", "ORG"],
+  "character_head_vocabulary": "configs/character_vocabulary.json",
+  "tensor_identity": "All 399 NER and 20 character-head tensors equal the retained seed42 checkpoints",
+  "distribution": "Author-provided local file; hosted download not yet available",
+  "download_url": null
+}
