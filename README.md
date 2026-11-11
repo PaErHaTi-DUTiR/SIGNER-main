@@ -101,7 +101,7 @@ Language-level statistics from the revised manuscript. Splits are reported as **
 
 Hours are rounded independently; displayed subtotals may differ slightly from the corpus total. Statistics describe the complete benchmark, not just the public examples.
 
-This release provides the author-designated [test examples](data/ca_stner_test/test.jsonl), plus a small [five-language format sample](data/ca_stner_sample/sample.jsonl). **The test-example file contains 998 records whose preserved source field is `split: dev`; it is not the manuscript's 997-record held-out TEST partition.** Its filename is retained as supplied. Do not use it to claim reproduction of the paper's TEST scores. Training data, private audio, reviewer materials, and manuscript TeX are not included.
+This release provides the **[CA-STNER TEST set](data/ca_stner_test/test.jsonl)** with **997 utterances**: kk 200, ky 200, tg 197, tk 200, and uz 200. All records have `split: test`, consistent with the manuscript's TEST statistics. A compact [five-language format sample](data/ca_stner_sample/sample.jsonl) is also included. TRAIN/DEV data, private audio, reviewer materials, and manuscript TeX are not included.
 
 See [data format and release scope](docs/DATA.md) and [annotation guidance](docs/ANNOTATION_GUIDELINES.md). Text-only inference does not open the audio paths carried by the source records.
 

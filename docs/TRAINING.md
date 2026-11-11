@@ -49,6 +49,6 @@ python scripts/evaluate.py --checkpoint model_checkpoint/SIGNER.pt \
   --input data/ca_stner_test/test.jsonl --device cpu
 ```
 
-The input filename does not override its source split. The supplied 998 author-designated test examples retain `split: dev` and do not reproduce the manuscript's held-out TEST partition. Predictions depend only on text/language; gold is read by the separate scorer afterwards. Precision/recall/F1 require exact original-character start, end, and type, including empty-entity sentences and truncation failures in the reference denominator.
+The supplied file is the author-confirmed CA-STNER TEST set: 997 records, all marked `split: test`. Use it only after freezing the model and configuration selected on separate DEV data. Predictions depend only on text/language; gold is read by the separate scorer afterwards. Precision/recall/F1 require exact original-character start, end, and type, including empty-entity sentences and truncation failures in the reference denominator.
 
 For repeated experiments, use seeds42/43/44, select each run independently on DEV, freeze the method, then evaluate TEST. Report mean ± sample SD, not a min–max range. The released one-checkpoint example is not a substitute for all three runs.

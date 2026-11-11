@@ -14,7 +14,7 @@ The released `scripts/evaluate.py` instantiates only the text encoder, text-view
 
 ## Interpreting scores
 
-README tables are manuscript three-seed TEST results. They are not new measurements of this one checkpoint on the public examples. The author-designated test-example file actually retains DEV provenance; it must not be used to claim reproduction of held-out TEST performance. A short `--max-examples` run is a smoke test only.
+README tables are manuscript three-seed TEST results. The public `data/ca_stner_test/test.jsonl` contains the author-confirmed 997-record CA-STNER TEST set, with every record marked `split: test`. Evaluate only frozen models on this file; do not use it for training or development. The one released checkpoint yields a single-run result, not a three-seed mean. A short `--max-examples` run is a smoke test only.
 
 ## Limitations
 

@@ -92,12 +92,15 @@ def verify_public_data() -> list[str]:
     path = ROOT / 'data/ca_stner_test/test.jsonl'
     rows = [json.loads(s) for s in path.read_text(encoding='utf-8').splitlines() if s.strip()]
     errors = []
-    if len(rows) != 998 or len({r['id'] for r in rows}) != 998:
-        errors.append('Public example identity/count mismatch')
-    if hashlib.sha256(path.read_bytes()).hexdigest() != '91b2b7f42371872fc129452b2feccd6ed359ce9037a0766fe264f888c61e6534':
-        errors.append('Author-provided example file has changed')
-    if {r['split'] for r in rows} != {'dev'}:
-        errors.append('Source split provenance changed')
+    if len(rows) != 997 or len({r['id'] for r in rows}) != 997:
+        errors.append('Public TEST identity/count mismatch')
+    if hashlib.sha256(path.read_bytes()).hexdigest() != '4eabe37421ec0f7a1a64f2f6ffe34c1a0ec041d7b3dc1acca576a57854e01a5a':
+        errors.append('Author-confirmed TEST file has changed')
+    if {r['split'] for r in rows} != {'test'}:
+        errors.append('Public TEST records must have split=test')
+    counts = {lang: sum(r['language'] == lang for r in rows) for lang in LANGUAGES}
+    if counts != {'kk': 200, 'ky': 200, 'tg': 197, 'tk': 200, 'uz': 200}:
+        errors.append('Public TEST language counts do not match manuscript')
     for row in rows:
         text = row['text']['normalized_transcript']
         if row['language'] not in LANGUAGES:
