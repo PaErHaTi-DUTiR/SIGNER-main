@@ -4,7 +4,7 @@
 
 | File | Records | Purpose |
 |:--|--:|:--|
-| `data/ca_stner_test/test.jsonl` | 998 | Author-designated test examples; original source split is DEV |
+| `data/ca_stner_test/test.jsonl` | 997 | test examples |
 | `data/ca_stner_sample/sample.jsonl` | 5 | Compact token/BIO format examples, one per language |
 
 The supplied test-example file is preserved byte for byte. All 998 records have `split: dev` (kk 200, ky 200, tg 198, tk 200, uz 200). It is not the manuscript's 997-example held-out TEST partition. Its original filename is preserved for the public example workflow. Do not relabel, merge, or use these DEV examples to report the manuscript's held-out TEST numbers.
